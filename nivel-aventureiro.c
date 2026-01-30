@@ -220,4 +220,72 @@ int main(void)
     }
 
     // Aloca memória para armazenar a missão do jogador
-    char* missa*
+    char* missaoJogador = malloc(100 * sizeof(char));
+    if (!missaoJogador)
+    {
+        printf("Erro ao alocar memoria da missao.\n");
+        free(mapa);
+        return 1;
+    }
+
+    cadastrarTerritorios(mapa, qtdTerritorios);
+
+    // Sorteia e mostra a missão
+    atribuirMissao(missaoJogador, missoes, 5);
+    exibirMissao(missaoJogador);
+
+    // Loop principal do jogo
+    do
+    {
+        int a, d;
+
+        exibirTerritorios(mapa, qtdTerritorios);
+
+        printf("Escolha o atacante (0 para sair): ");
+        scanf("%d", &a);
+
+        if (a == 0)
+            break;
+
+        printf("Escolha o defensor: ");
+        scanf("%d", &d);
+
+        // Ajuste para índice do vetor
+        a--;
+        d--;
+
+        // Validações básicas
+        if (a < 0 || a >= qtdTerritorios || d < 0 || d >= qtdTerritorios)
+        {
+            printf("Indice invalido.\n");
+        }
+        else if (a == d)
+        {
+            printf("Nao e possivel atacar o mesmo territorio.\n");
+        }
+        else if (strcmp(mapa[a].cor, mapa[d].cor) == 0)
+        {
+            printf("Nao e permitido atacar territorio da mesma cor.\n");
+        }
+        else
+        {
+            atacar(&mapa[a], &mapa[d]);
+
+            // Checa automaticamente se a missão foi cumprida
+            if (verificarMissao(missaoJogador, mapa, qtdTerritorios))
+            {
+                printf("\n🏆 MISSAO CUMPRIDA! VOCE VENCEU O JOGO!\n");
+                break;
+            }
+        }
+
+        printf("\nDeseja realizar outro ataque? (1 = sim / 0 = nao): ");
+        scanf("%d", &opcao);
+
+    } while (opcao != 0);
+
+    liberarMemoria(mapa, missaoJogador);
+    printf("\nSistema encerrado. Memoria liberada.\n");
+
+    return 0;
+}
